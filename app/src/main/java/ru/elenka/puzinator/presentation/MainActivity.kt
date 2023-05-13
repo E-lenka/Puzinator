@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ru.elenka.puzinator.R
+import android.content.Intent
 
 
 class MainActivity : AppCompatActivity(){
@@ -15,5 +16,12 @@ class MainActivity : AppCompatActivity(){
 
     fun onAddButtonClick(view: View) {
         Toast.makeText(applicationContext, "Добавь фото шедевра!",Toast.LENGTH_LONG).show()
+        // Create an Intent to start the second activity
+
+      val cameraIntent = Intent(this, MyCamera::class.java)
+
+       //  Start the new activity.
+
+       startActivity(cameraIntent)
     }
 }
