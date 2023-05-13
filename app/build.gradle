@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "ru.synergy.booksapp"
+        applicationId "ru.elenka.puzinator"
         minSdk 23
         targetSdk 33
         versionCode 1
@@ -42,8 +42,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -66,6 +66,7 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation project(path: ':data')
     implementation project(path: ':domain')
+    implementation 'com.google.ar.sceneform:filament-android:1.17.1'
     kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     // Logging

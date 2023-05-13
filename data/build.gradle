@@ -23,8 +23,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -37,7 +37,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     // Room for data persistence
     api "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    compileOnly 'com.github.pengrad:jdk9-deps:1.0'
+    kapt "androidx.room:room-compiler:2.5.1"
  //   implementation "androidx.room:room-coroutines:$room_version"
 
     // optional - Kotlin Extensions and Coroutines support for Room

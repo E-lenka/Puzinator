@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.synergy.booksapp">
+    package="ru.elenka.puzinator">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name="ru.elenka.puzinator.CleanArchitectureBlueprintsApplication"
         android:allowBackup="true"
-        android:name=".CleanArchitectureBlueprintsApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="ru.elenka.puzinator.presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
