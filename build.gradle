@@ -45,7 +45,7 @@ ext {
     hilt_lifecycle_extensions_version = '1.0.0-alpha02'
     junit_version = '4.13.2'
     glide_version = '4.15.1'
-    material_version = '1.8.0'  //'1.10.0-alpha02' is not suited for SDK = 33
+    material_version = '1.9.0'  //'1.10.0-alpha02' is not suited for SDK = 33
 
     moshi_version = '1.14.0'
     okhttp_version = '5.0.0-alpha.11'
