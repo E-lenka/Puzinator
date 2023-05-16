@@ -30,10 +30,8 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult())
         { activityResult ->
             if (activityResult.resultCode == 1002) {
-                Toast.makeText(
-                    baseContext, activityResult.data?.getStringExtra("imageUri"), Toast.LENGTH_SHORT
-                ).show()
-
+                val imageUri = activityResult.data?.getStringExtra("imageUri")
+                Toast.makeText(baseContext, imageUri, Toast.LENGTH_LONG).show()
 
             }
 
