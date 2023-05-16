@@ -1,8 +1,8 @@
 package ru.elenka.data.db
 
 import androidx.room.*
-import ru.elenka.data.entities.BookEntity
 import kotlinx.coroutines.flow.Flow
+import ru.elenka.data.entities.BookEntity
 
 @Dao
 interface BookDao {

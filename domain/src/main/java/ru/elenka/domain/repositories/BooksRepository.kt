@@ -1,8 +1,8 @@
 package ru.elenka.domain.repositories
 
+import kotlinx.coroutines.flow.Flow
 import ru.elenka.domain.common.Result
 import ru.elenka.domain.entities.Volume
-import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
 

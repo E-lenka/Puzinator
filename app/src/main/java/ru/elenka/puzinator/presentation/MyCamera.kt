@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import android.content.ContentValues
+import android.content.Intent
 import android.provider.MediaStore
 import androidx.camera.core.CameraSelector
 import android.util.Log
@@ -39,34 +40,35 @@ import java.util.Locale
 typealias LumaListener = (luma: Double) -> Unit
 
 class MyCamera : AppCompatActivity() {
-         private lateinit var viewBinding: ActivityMyCameraBinding
+    private lateinit var viewBinding: ActivityMyCameraBinding
 
-        private var imageCapture: ImageCapture? = null
+    private var imageCapture: ImageCapture? = null
 
-        private var videoCapture: VideoCapture<Recorder>? = null
-        private var recording: Recording? = null
+    private var videoCapture: VideoCapture<Recorder>? = null
+    private var recording: Recording? = null
 
-        private lateinit var cameraExecutor: ExecutorService
+    private lateinit var cameraExecutor: ExecutorService
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            viewBinding = ActivityMyCameraBinding.inflate(layoutInflater)
-            setContentView(viewBinding.root)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewBinding = ActivityMyCameraBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-            // Request camera permissions
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                ActivityCompat.requestPermissions(
-                    this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-            }
-
-            // Set up the listeners for take photo and video capture buttons
-            viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-            viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
-
-            cameraExecutor = Executors.newSingleThreadExecutor()
+        // Request camera permissions
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
+
+        // Set up the listeners for take photo and video capture buttons
+        viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
+        viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
 
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
@@ -78,7 +80,7 @@ class MyCamera : AppCompatActivity() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
             }
 
@@ -86,9 +88,11 @@ class MyCamera : AppCompatActivity() {
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(contentResolver,
+            .Builder(
+                contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
+                contentValues
+            )
             .build()
 
         // Set up image capture listener, which is triggered after photo has
@@ -102,16 +106,17 @@ class MyCamera : AppCompatActivity() {
                 }
 
                 override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                        onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val msg = "${output.savedUri}"
+                   // Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                }
-            }
-        )
+                    setResult(1002, Intent().apply { putExtra("imageUri", msg) })
+                    finish()
+            }})
     }
 
-        private fun captureVideo() {}
+
+    private fun captureVideo() {}
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -139,67 +144,73 @@ class MyCamera : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                    this, cameraSelector, preview, imageCapture
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(this))
     }
 
-        private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(
-                baseContext, it) == PackageManager.PERMISSION_GRANTED
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+    companion object {
+        private const val TAG = "CameraXApp"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private val REQUIRED_PERMISSIONS =
+            mutableListOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO
+            ).apply {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }.toTypedArray()
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults:
+        IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Permissions not granted by the user.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            }
         }
 
-        override fun onDestroy() {
-            super.onDestroy()
-            cameraExecutor.shutdown()
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+
         }
-
-        companion object {
-            private const val TAG = "CameraXApp"
-            private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-            private const val REQUEST_CODE_PERMISSIONS = 10
-            private val REQUIRED_PERMISSIONS =
-                mutableListOf (
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO
-                ).apply {
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                        add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    }
-                }.toTypedArray()
-        }
-
-
-override fun onRequestPermissionsResult(
-    requestCode: Int, permissions: Array<String>, grantResults:
-    IntArray) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (requestCode == REQUEST_CODE_PERMISSIONS) {
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            Toast.makeText(this,
+            Toast.makeText(
+                this,
                 "Permissions not granted by the user.",
-                Toast.LENGTH_SHORT).show()
+                Toast.LENGTH_SHORT
+            ).show()
             finish()
         }
     }
-
-    if (requestCode == REQUEST_CODE_PERMISSIONS) {
-
-    }
-    if (allPermissionsGranted()) {
-        startCamera()
-    }
-    else {
-        Toast.makeText(this,
-            "Permissions not granted by the user.",
-            Toast.LENGTH_SHORT).show()
-        finish()
-    }
-}
 }

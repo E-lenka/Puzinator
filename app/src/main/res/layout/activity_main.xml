@@ -19,14 +19,13 @@
         app:navGraph="@navigation/nav_graph" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-         android:id="@+id/floatingActionButtonAdd"
+        android:id="@+id/floatingActionButtonAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="50dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="onAddButtonClick"
         app:backgroundTint="#FF9800"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
